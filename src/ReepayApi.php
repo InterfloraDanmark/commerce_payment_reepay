@@ -3,7 +3,6 @@
 namespace Drupal\commerce_payment_reepay;
 
 use Drupal\commerce_order\Entity\Order;
-use Drupal\serialization\Encoder\XmlEncoder;
 use GuzzleHttp\Client;
 use Drupal\Core\Site\Settings;
 use GuzzleHttp\Exception\RequestException;
@@ -13,14 +12,14 @@ use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 /**
- * Class CrmApi
+ * Class ReepayApi.
  *
- * @package Drupal\interflora_crm
+ * @package Drupal\commerce_payment_reepay
  */
 class ReepayApi {
 
   /**
-   * Base reepay url.
+   * Reepay base URL.
    *
    * @var string
    */
@@ -29,14 +28,19 @@ class ReepayApi {
   /**
    * The guzzle client.
    *
-   * @var Client
+   * @var \GuzzleHttp\Client
    */
   private $client;
 
+  /**
+   * The serializer.
+   *
+   * @var \Symfony\Component\Serializer\Serializer
+   */
   private $serializer;
 
   /**
-   * CrmApi constructor.
+   * ReepayApi constructor.
    *
    * @param string $privateKey
    *   The Reepay private key.
@@ -77,7 +81,7 @@ class ReepayApi {
   }
 
   /**
-   * Perform a POST request to the CRM.
+   * Perform a POST request.
    *
    * @param string $url
    *   The POST url to call.
@@ -108,7 +112,7 @@ class ReepayApi {
   }
 
   /**
-   * Perform a POST request to the CRM.
+   * Perform a POST request.
    *
    * @param string $url
    *   The POST url to call.
