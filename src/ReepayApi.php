@@ -411,4 +411,17 @@ class ReepayApi {
     return $this->postRequest(sprintf('add_on/%s', $addOnId));
   }
 
+  /**
+   * Get a charge.
+   *
+   * @param string $handle
+   *   The charge handle.
+   *
+   * @return mixed
+   *   The charge object or FALSE.
+   */
+  public function getCharge(string $handle) {
+    return $this->getRequest('charge/' . $handle, 'ReepayCharge');
+  }
+
 }
