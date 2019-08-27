@@ -15,3 +15,15 @@ handling:
   dependencies:
     - core/jquery
     - core/drupalSettings
+
+checkout:
+  remote: https://checkout.reepay.com/checkout.js
+  license:
+    name: unknown
+  js:
+    https://checkout.reepay.com/checkout.js: { type: external, minified: true }
+    js/reepay-checkout.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupalSettings
