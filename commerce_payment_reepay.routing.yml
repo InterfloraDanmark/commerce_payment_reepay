@@ -1,7 +1,0 @@
-commerce_payment_reepay.webhook_controller_webhookCallback:
-  path: '/commerce_payment_reepay/webhook/callback'
-  defaults:
-    _controller: '\Drupal\commerce_payment_reepay\Controller\WebhookController::webhookCallback'
-    _title: 'webhookCallback'
-  requirements:
-    _permission: 'access content'
