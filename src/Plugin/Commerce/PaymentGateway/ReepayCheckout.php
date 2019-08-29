@@ -332,6 +332,12 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
         throw new WebhookException('Signature check failed');
       }
 
+      // Dispatch a LOOKUP_ORDER-event to look up the order by the invoice handle.
+      $this->eventDispatcher->dispatch(ReepayEvents::LOOKUP_ORDER, $webhookEvent);
+      if (!$webhookEvent->getOrder() instanceof OrderInterface) {
+        throw new WebhookException('Could not look up order by handle: ' . $webhookEvent->getInvoiceHandle());
+      }
+
       // Dispatch a PROCESS_WEBHOOK-event to allow other modules to act on an
       // incoming webhook before the default event subscriber .
       $this->eventDispatcher->dispatch(ReepayEvents::PROCESS_WEBHOOK, $webhookEvent);

@@ -30,4 +30,11 @@ final class ReepayEvents {
    */
   const PROCESS_WEBHOOK = 'commerce_payment_reepay.event.process_webhook';
 
+  /**
+   * The name of the event fired when looking up an order.
+   *
+   * @Event
+   */
+  const LOOKUP_ORDER = 'commerce_payment_reepay.event.lookup_order';
+
 }
