@@ -6,6 +6,7 @@
 
 namespace Drupal\commerce_payment_reepay\Event;
 
+use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
 use Symfony\Component\EventDispatcher\Event;
 
@@ -22,6 +23,13 @@ class WebhookEvent extends Event {
    * @var \Drupal\commerce_payment\Entity\PaymentGatewayInterface
    */
   protected $paymentGateway;
+
+  /**
+   * The order.
+   *
+   * @var \Drupal\commerce_order\Entity\OrderInterface
+   */
+  protected $order;
 
   /**
    * The webhook contents.
@@ -51,6 +59,31 @@ class WebhookEvent extends Event {
    */
   public function getPaymentGateway(): PaymentGatewayInterface {
     return $this->paymentGateway;
+  }
+
+  /**
+   * Get the order.
+   *
+   * @return \Drupal\commerce_order\Entity\OrderInterface|NULL
+   *   The order.
+   */
+  public function getOrder() {
+    return $this->order;
+  }
+
+  /**
+   * Set the order.
+   *
+   * @param \Drupal\commerce_order\Entity\OrderInterface $order
+   *   The order.
+   *
+   * @return self
+   *   Return self for chaining.
+   */
+  public function setOrder($order) {
+    $this->order = $order;
+
+    return $this;
   }
 
   /**
