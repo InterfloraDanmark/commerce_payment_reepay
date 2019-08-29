@@ -409,9 +409,12 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       ->condition('remote_id', $charge->getTransaction())
       ->condition('order_id', $order->id());
     $payments = $query->execute();
-    if (!empty($payments)) {
+    if (count($payments) == 1) {
       $payment_id = reset($payments);
       return $this->paymentStorage->load($payment_id);
+    }
+    elseif (count($payments) > 1) {
+      throw new PaymentGatewayException('');
     }
 
     $source = $charge->getSource();
