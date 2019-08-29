@@ -24,6 +24,7 @@ class EventSubscriber implements EventSubscriberInterface {
       ReepayEvents::CREATE_CHECKOUT_SESSION => 'onCreateCheckoutSession',
       ReepayEvents::PROCESS_PAYMENT => 'onProcessPayment',
       ReepayEvents::PROCESS_WEBHOOK => 'onProcessWebhook',
+      ReepayEvents::LOOKUP_ORDER => 'onLookupOrder',
     ];
   }
 
@@ -92,6 +93,26 @@ class EventSubscriber implements EventSubscriberInterface {
     }
     else {
       throw new WebhookException('Unhandled event type: ' . $event->getEventType());
+    }
+  }
+
+  /**
+   * Process the look up order event.
+   *
+   * @param \Drupal\commerce_payment_reepay\Event\WebhookEvent $event
+   *   The webhook event.
+   */
+  public function onLookupOrder(WebhookEvent $event) {
+    if (!$event->getOrder() instanceof OrderInterface) {
+      $invoiceHandle = $event->getInvoiceHandle() ?? '';
+      $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
+      $configuration = $paymentGatewayPlugin->getConfiguration();
+      $orderNumberPrefix = $configuration['order_number_prefix'];
+      if (strpos($invoiceHandle, $orderNumberPrefix) === 0) {
+        $orderId = substr($invoiceHandle, strlen($orderNumberPrefix));
+        $order = $paymentGatewayPlugin->loadOrderByProperties(['order_id' => $orderId]);
+        $event->setOrder($order);
+      }
     }
   }
 
