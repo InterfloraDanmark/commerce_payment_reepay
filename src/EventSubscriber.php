@@ -40,13 +40,13 @@ class EventSubscriber implements EventSubscriberInterface {
     $sessionData = $event->getSessionData();
     // If neither 'order' nor 'invoice' have been populated set defaults before creating the session.
     if (empty($sessionData['order']) && empty($sessionData['invoice'])) {
-      $orderNumber = $configuration['order_number_prefix'] . $order->id();
+      $orderHandle = $configuration['order_number_prefix'] . $order->id();
       $totalPrice = $order->getTotalPrice();
       $sessionData['order'] = [
-        'handle' => $order->uuid(),
+        'handle' => $orderHandle,
         'amount' => round($totalPrice->getNumber() * 100, 0),
         'currency' => $totalPrice->getCurrencyCode(),
-        'ordertext' => $this->t('Order @order_number', ['@order_number' => $orderNumber], ['context' => 'Reepay']),
+        'ordertext' => $this->t('Order @handle', ['@handle' => $orderHandle], ['context' => 'Reepay']),
         'customer' => [
           'email' => $order->mail->value,
         ],
@@ -80,11 +80,8 @@ class EventSubscriber implements EventSubscriberInterface {
     // Default is to only process invoice_authorized-events.
     if ($event->getEventType() == 'invoice_authorized') {
       $invoiceHandle = $event->getInvoiceHandle() ?? '';
-      $order = $paymentGatewayPlugin->loadOrderByProperties(['uuid' => $invoiceHandle]);
+      $order = $event->getOrder();
       $charge = $paymentGatewayPlugin->getReepayApi()->getCharge($invoiceHandle);
-      if (!$order instanceof OrderInterface) {
-        throw new WebhookException('Order not found: ' . $invoiceHandle);
-      }
       if (!$charge instanceof ReepayCharge) {
         throw new WebhookException('Charge not found: ' . $invoiceHandle);
       }
