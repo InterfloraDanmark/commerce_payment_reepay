@@ -1,13 +1,8 @@
 <?php
 
-/**
- * @file
- */
-
 namespace Drupal\commerce_payment_reepay\Event;
 
 use Drupal\commerce_order\Entity\OrderInterface;
-use Drupal\commerce_payment\Entity\PaymentInterface;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
 use Drupal\commerce_payment_reepay\Model\ReepayCharge;
 use Symfony\Component\EventDispatcher\Event;
@@ -33,11 +28,11 @@ class PaymentEvent extends Event {
   protected $order;
 
   /**
-   * The payment.
+   * The request.
    *
-   * @var \Drupal\commerce_payment\Entity\PaymentInterface
+   * @var \Symfony\Component\HttpFoundation\Request
    */
-  protected $payment;
+  protected $request;
 
   /**
    * The reepay charge.
@@ -47,31 +42,18 @@ class PaymentEvent extends Event {
   protected $charge;
 
   /**
-   * The request.
-   *
-   * @var \Symfony\Component\HttpFoundation\Request
-   */
-  protected $request;
-
-  /**
    * Constructs a new PaymentEvent.
    *
    * @param \Drupal\commerce_payment\Entity\PaymentGatewayInterface $paymentGateway
    *   The payment gateway.
    * @param \Drupal\commerce_order\Entity\OrderInterface $order
    *   The order.
-   * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
-   *   The order.
-   * @param \Drupal\commerce_payment_reepay\Model\ReepayCharge $charge
-   *   The Reepay charge.
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request.
    */
-  public function __construct(PaymentGatewayInterface $paymentGateway, OrderInterface $order, PaymentInterface $payment, ReepayCharge $charge, Request $request) {
+  public function __construct(PaymentGatewayInterface $paymentGateway, OrderInterface $order, Request $request) {
     $this->paymentGateway = $paymentGateway;
     $this->order = $order;
-    $this->payment = $payment;
-    $this->charge = $charge;
     $this->request = $request;
   }
 
@@ -96,26 +78,6 @@ class PaymentEvent extends Event {
   }
 
   /**
-   * Get the payment.
-   *
-   * @return \Drupal\commerce_payment\Entity\PaymentInterface
-   *   The payment.
-   */
-  public function getPayment(): PaymentInterface {
-    return $this->payment;
-  }
-
-  /**
-   * Get the Reepay charge.
-   *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge
-   *   The Reepay charge.
-   */
-  public function getCharge(): ReepayCharge {
-    return $this->charge;
-  }
-
-  /**
    * Get the request.
    *
    * @return \Symfony\Component\HttpFoundation\Request
@@ -123,6 +85,30 @@ class PaymentEvent extends Event {
    */
   public function getRequest(): Request {
     return $this->request;
+  }
+
+  /**
+   * Get the Reepay charge.
+   *
+   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge|null
+   *   The Reepay charge or NULL.
+   */
+  public function getCharge() {
+    return $this->charge;
+  }
+
+  /**
+   * Set the Reepay charge.
+   *
+   * @param \Drupal\commerce_payment_reepay\Model\ReepayCharge $charge
+   *   The Reepay charge.
+   *
+   * @return self
+   *   Return self for chaining.
+   */
+  public function setCharge(ReepayCharge $charge): self {
+    $this->charge = $charge;
+    return $this;
   }
 
 }
