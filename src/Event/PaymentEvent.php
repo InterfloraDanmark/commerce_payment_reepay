@@ -111,4 +111,64 @@ class PaymentEvent extends Event {
     return $this;
   }
 
+  /**
+   * Get the session id.
+   *
+   * @return string|null
+   *   The session id.
+   */
+  public function getSessionId() {
+    return $this->request->query->get('id') ?? NULL;
+  }
+
+  /**
+   * Get the invoice handle.
+   *
+   * @return string|null
+   *   The invoice handle.
+   */
+  public function getInvoiceHandle() {
+    return $this->request->query->get('invoice') ?? NULL;
+  }
+
+  /**
+   * Get the customer handle.
+   *
+   * @return string|null
+   *   The customer handle.
+   */
+  public function getCustomerHandle() {
+    return $this->request->query->get('customer') ?? NULL;
+  }
+
+  /**
+   * Get the subscription handle.
+   *
+   * @return string|null
+   *   The subscription handle.
+   */
+  public function getSubscriptionHandle() {
+    return $this->request->query->get('subscription') ?? NULL;
+  }
+
+  /**
+   * Get the payment method.
+   *
+   * @return string|null
+   *   The payment method.
+   */
+  public function getPaymentMethod() {
+    return $this->request->query->get('payment_method') ?? NULL;
+  }
+
+  /**
+   * Get the error.
+   *
+   * @return string|null
+   *   The error.
+   */
+  public function getError() {
+    return $this->request->query->get('error') ?? NULL;
+  }
+
 }
