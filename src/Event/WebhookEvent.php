@@ -99,7 +99,7 @@ class WebhookEvent extends Event {
   /**
    * The unique id for the webhook.
    *
-   * @return string|NULL
+   * @return string
    *   The unique id.
    */
   public function getId() {
@@ -109,7 +109,7 @@ class WebhookEvent extends Event {
   /**
    * The id of the event triggering the webhook.
    *
-   * @return string|NULL
+   * @return string
    *   The event id.
    */
   public function getEventId() {
@@ -119,7 +119,7 @@ class WebhookEvent extends Event {
   /**
    * The event type.
    *
-   * @return string|NULL
+   * @return string
    *   The event type
    */
   public function getEventType() {
@@ -129,7 +129,7 @@ class WebhookEvent extends Event {
   /**
    * Timestamp in ISO-8601 when the webhook was triggered.
    *
-   * @return string|NULL
+   * @return string
    *   The timestamp.
    */
   public function getTimestamp() {
@@ -139,7 +139,7 @@ class WebhookEvent extends Event {
   /**
    * Signature to verify the authenticity of the webhook.
    *
-   * @return string|NULL
+   * @return string
    *   The signature.
    */
   public function getSignature() {
@@ -149,21 +149,21 @@ class WebhookEvent extends Event {
   /**
    * Optional customer handle.
    *
-   * @return string|NULL
+   * @return string|null
    *   The customer handle.
    */
   public function getCustomerHandle() {
-    return $this->contents->customer;
+    return $this->contents->customer ?? NULL;
   }
 
   /**
    * Optional payment method id.
    *
-   * @return string|NULL
+   * @return string|null
    *   The payment method.
    */
   public function getPaymentMethod() {
-    return $this->contents->payment_method;
+    return $this->contents->payment_method ?? NULL;
   }
 
   /**
@@ -171,11 +171,11 @@ class WebhookEvent extends Event {
    *
    * Only included if event relates to a subscription resource.
    *
-   * @return string|NULL
+   * @return string|null
    *   The subscription handle.
    */
   public function getSubscriptionHandle() {
-    return $this->contents->subscription;
+    return $this->contents->subscription ?? NULL;
   }
 
   /**
@@ -183,11 +183,11 @@ class WebhookEvent extends Event {
    *
    * Only included if event relates to an invoice resource.
    *
-   * @return string|NULL
+   * @return string|null
    *   The invoice handle.
    */
   public function getInvoiceHandle() {
-    return $this->contents->invoice;
+    return $this->contents->invoice ?? NULL;
   }
 
   /**
@@ -197,23 +197,24 @@ class WebhookEvent extends Event {
    * of a transaction, e.g. a card settle transaction. The transaction id the
    * same as refund id for refunds.
    *
-   * @return string|NULL
+   * @return string|null
    *   The transaction id.
    */
   public function getTransactionId() {
-    return $this->contents->transaction;
+    return $this->contents->transaction ?? NULL;
   }
 
   /**
    * The optional credit note.
    *
-   * Only included if the event relates to an invoice refund or an invoice credit.
+   * Only included if the event relates to an invoice refund or an invoice
+   * credit.
    *
-   * @return string|NULL
+   * @return string|null
    *   The credit note.
    */
   public function getCreditNote() {
-    return $this->contents->credit_note;
+    return $this->contents->credit_note ?? NULL;
   }
 
   /**
@@ -221,20 +222,17 @@ class WebhookEvent extends Event {
    *
    * Only included if the event is an invoice credit.
    *
-   * @return string|NULL
+   * @return string|null
    *   The credit id.
    */
   public function getCreditId() {
-    return $this->contents->credit;
+    return $this->contents->credit ?? NULL;
   }
 
   /**
    * Check the webhook signature.
    *
-   * @param array $content
-   *   The webhook contents.
-   *
-   * @return book
+   * @return bool
    *   TRUE if the signature matches otherwise FALSE.
    */
   public function validSignature() {
