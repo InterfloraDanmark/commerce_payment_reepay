@@ -419,8 +419,9 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    *   The payment object.
    */
   public function getPayment(OrderInterface $order, ReepayCharge $charge): PaymentInterface {
+    $remoteId = $charge->getSource()->auth_transaction;
     $query = $this->paymentStorage->getQuery()
-      ->condition('remote_id', $charge->getTransaction())
+      ->condition('remote_id', $remoteId)
       ->condition('order_id', $order->id());
     $payments = $query->execute();
     if (count($payments) == 1) {

@@ -77,9 +77,12 @@ class EventSubscriber implements EventSubscriberInterface {
    *   The webhook event.
    */
   public function onProcessWebhook(WebhookEvent $event) {
-    $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
-    // Default is to only process invoice_authorized-events.
-    if ($event->getEventType() == 'invoice_authorized') {
+    $handled_events = [
+      'invoice_authorized',
+      'invoice_settled',
+    ];
+    if (in_array($event->getEventType(), $handled_events)) {
+      $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
       $invoiceHandle = $event->getInvoiceHandle() ?? '';
       $order = $event->getOrder();
       $charge = $paymentGatewayPlugin->getReepayApi()->getCharge($invoiceHandle);
