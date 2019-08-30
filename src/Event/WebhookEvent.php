@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- */
-
 namespace Drupal\commerce_payment_reepay\Event;
 
 use Drupal\commerce_order\Entity\OrderInterface;
@@ -43,7 +39,7 @@ class WebhookEvent extends Event {
    *
    * @param \Drupal\commerce_payment\Entity\PaymentGatewayInterface $paymentGateway
    *   The payment gateway.
-   * @param object
+   * @param \object $contents
    *   The webhook contents.
    */
   public function __construct(PaymentGatewayInterface $paymentGateway, object $contents) {
@@ -64,7 +60,7 @@ class WebhookEvent extends Event {
   /**
    * Get the order.
    *
-   * @return \Drupal\commerce_order\Entity\OrderInterface|NULL
+   * @return \Drupal\commerce_order\Entity\OrderInterface|null
    *   The order.
    */
   public function getOrder() {
@@ -80,9 +76,8 @@ class WebhookEvent extends Event {
    * @return self
    *   Return self for chaining.
    */
-  public function setOrder($order) {
+  public function setOrder(OrderInterface $order) {
     $this->order = $order;
-
     return $this;
   }
 
