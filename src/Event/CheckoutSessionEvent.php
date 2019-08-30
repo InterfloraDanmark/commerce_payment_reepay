@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @file
- */
-
 namespace Drupal\commerce_payment_reepay\Event;
 
 use Drupal\commerce_order\Entity\OrderInterface;
@@ -51,7 +47,6 @@ class CheckoutSessionEvent extends Event {
     $this->order = $order;
     $this->sessionData = $sessionData;
   }
-
 
   /**
    * Get the payment gateway.
