@@ -269,44 +269,58 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    */
   public function onReturn(OrderInterface $order, Request $request) {
     try {
-      // Get the order, charge and payment
-      $invoiceHandle = $request->query->get('invoice') ?? '';
-      $charge = $this->reepayApi->getCharge($invoiceHandle);
-      if (!$charge instanceof ReepayCharge) {
-        $this->getLogger('commerce_payment_reepay')->error(
-          $this->t('Reepay charge for order @handle not found'),
-          ['@handle' => $invoiceHandle]
-        );
-        throw new PaymentGatewayException();
-      }
-      $payment = $this->getPayment($order, $charge);
-
-      // The return url can be tampered with so check actual status of the charge.
-      if ($charge->getState() != 'authorized') {
-        $this->getLogger('commerce_payment_reepay')->error(
-          $this->t('Possible attempt at tampering with return url for order @handle'),
-          ['@handle' => $invoiceHandle]
-        );
-        throw new PaymentGatewayException();
-      }
-
-      // If the error message was not empty, log it and continue processing.
-      $error = $request->query->get('error');
-      if (!empty($error)) {
-        $this->getLogger('commerce_payment_reepay')->error(
-          $this->t('Error on return url for order @handle: @error'),
-          ['@handle' => $orderUuid, '@error' => $error]
-        );
-        throw new PaymentGatewayException();
-      }
-
-      // Dispatch a PROCESS_PAYMENT-event to allow other modules to act on a payment.
       $paymentGateway = $this->entityTypeManager->getStorage('commerce_payment_gateway')->load($this->entityId);
-      $paymentEvent = new PaymentEvent($paymentGateway, $order, $payment, $charge, $request);
+      $paymentEvent = new PaymentEvent($paymentGateway, $order, $request);
+
+      // If the error message was not empty, log it and throw exception to
+      // cancel payment.
+      $error = $paymentEvent->getError();
+      if (!empty($error)) {
+        $message = $this->t(
+          'Error on return url: @error',
+          ['@error' => $error]
+        );
+        throw new PaymentGatewayException($message);
+      }
+
+      // If there is an invoice handle, look up the charge.
+      $invoiceHandle = $paymentEvent->getInvoiceHandle();
+      if (!empty($invoiceHandle)) {
+        $charge = $this->reepayApi->getCharge($invoiceHandle);
+        if (!$charge instanceof ReepayCharge) {
+          $message = $this->t(
+            'Reepay charge @handle not found',
+            ['@handle' => $invoiceHandle]
+          );
+          throw new PaymentGatewayException($message);
+        }
+        // The return url can be tampered with so check actual status of the charge.
+        elseif ($charge->getState() != 'authorized') {
+          $message = $this->t(
+            'Possible attempt at tampering with return url for order @handle',
+            ['@handle' => $invoiceHandle]
+          );
+          throw new PaymentGatewayException($message);
+        }
+        // Add the authorized charge to the PaymentEvent-object for further processing.
+        $paymentEvent->setCharge($charge);
+      }
+
+      // Dispatch a PROCESS_PAYMENT-event to allow other modules to act on a
+      // successful payment.
       $this->eventDispatcher->dispatch(ReepayEvents::PROCESS_PAYMENT, $paymentEvent);
     }
     catch (\Exception $exception) {
-      throw new PaymentGatewayException($exception->getMessage());
+      // Log the exception message and throw generic payment gateway
+      // exceptionwithout error message.
+      $this->getLogger('commerce_payment_reepay')->error(
+        $this->t('@class: @message'),
+        [
+          '@class' => get_class($exception),
+          '@message' => $exception->getMessage(),
+        ]
+      );
+      throw new PaymentGatewayException();
     }
   }
 
