@@ -8,10 +8,12 @@ use Drupal\commerce_payment_reepay\Event\PaymentEvent;
 use Drupal\commerce_payment_reepay\Event\CheckoutSessionEvent;
 use Drupal\commerce_payment_reepay\Exception\WebhookException;
 use Drupal\commerce_payment_reepay\Model\ReepayCharge;
-use Drupal\commerce_payment_reepay\ReepayEvents;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * The EventSubscriber-class with default eventhandlers.
+ */
 class EventSubscriber implements EventSubscriberInterface {
 
   use StringTranslationTrait;
@@ -38,7 +40,8 @@ class EventSubscriber implements EventSubscriberInterface {
     $order = $event->getOrder();
     $configuration = $event->getPaymentGateway()->getPluginConfiguration();
     $sessionData = $event->getSessionData();
-    // If neither 'order' nor 'invoice' have been populated set defaults before creating the session.
+    // If neither 'order' nor 'invoice' have been populated set defaults
+    // before creating the session.
     if (empty($sessionData['order']) && empty($sessionData['invoice'])) {
       $orderHandle = $configuration['order_number_prefix'] . $order->id();
       $totalPrice = $order->getTotalPrice();

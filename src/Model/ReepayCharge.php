@@ -1,19 +1,14 @@
 <?php
 
-/**
- * @file
- */
-
 namespace Drupal\commerce_payment_reepay\Model;
 
-use \Drupal\commerce_price\Price;
+use Drupal\commerce_price\Price;
 
 /**
  * Class ReepayCharge.
  *
  * @package Drupal\commerce_payment_reepay\Model
  */
-
 class ReepayCharge {
 
   /**
@@ -68,6 +63,7 @@ class ReepayCharge {
    * Get the charge handle.
    *
    * @return string
+   *   The charge handle.
    */
   public function getHandle(): string {
     return $this->handle;
@@ -77,8 +73,10 @@ class ReepayCharge {
    * Set the charge handle.
    *
    * @param string $handle
+   *   The charge handle.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge
+   * @return self
+   *   Self for chaining.
    */
   public function setHandle(string $handle): self {
     $this->handle = $handle;
@@ -90,6 +88,7 @@ class ReepayCharge {
    * Get the state.
    *
    * @return string
+   *   The state.
    */
   public function getState(): string {
     return $this->state;
@@ -99,8 +98,10 @@ class ReepayCharge {
    * Set the state.
    *
    * @param string $state
+   *   The state.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge
+   * @return self
+   *   Self for chaining.
    */
   public function setState(string $state): self {
     $this->state = $state;
@@ -112,6 +113,7 @@ class ReepayCharge {
    * Get the amount.
    *
    * @return int
+   *   The amount.
    */
   public function getAmount(): int {
     return $this->amount;
@@ -121,8 +123,10 @@ class ReepayCharge {
    * Set the amount.
    *
    * @param int $amount
+   *   The amount.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge
+   * @return self
+   *   Self for chaining.
    */
   public function setAmount(int $amount): self {
     $this->amount = $amount;
@@ -134,6 +138,7 @@ class ReepayCharge {
    * Get the currency.
    *
    * @return string
+   *   The currency.
    */
   public function getCurrency(): string {
     return $this->currency;
@@ -143,8 +148,10 @@ class ReepayCharge {
    * Set the currency.
    *
    * @param string $currency
+   *   The currency.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge
+   * @return self
+   *   Self for chaining.
    */
   public function setCurrency(string $currency): self {
     $this->currency = $currency;
@@ -156,6 +163,7 @@ class ReepayCharge {
    * Get the price.
    *
    * @return \Drupal\commerce_price\Price
+   *   The price.
    */
   public function getPrice(): Price {
     return new Price($this->amount / 100, $this->currency);
@@ -165,8 +173,10 @@ class ReepayCharge {
    * Set the price.
    *
    * @param \Drupal\commerce_price\Price $price
+   *   The price.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge
+   * @return self
+   *   Self for chaining.
    */
   public function setPrice(Price $price): self {
     $this->amount = (int) ($price->getNumber() * 100);
@@ -179,6 +189,7 @@ class ReepayCharge {
    * Get the transaction.
    *
    * @return string
+   *   The transaction.
    */
   public function getTransaction(): string {
     return $this->transaction;
@@ -188,8 +199,10 @@ class ReepayCharge {
    * Set the transaction.
    *
    * @param string $transaction
+   *   The transaction.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge
+   * @return self
+   *   Self for chaining.
    */
   public function setTransaction(string $transaction): self {
     $this->transaction = $transaction;
@@ -199,6 +212,9 @@ class ReepayCharge {
 
   /**
    * Get the charge source.
+   *
+   * @return object
+   *   The charge source.
    */
   public function getSource(): object {
     return $this->source;
@@ -208,10 +224,12 @@ class ReepayCharge {
    * Set the charge source.
    *
    * @param object $source
+   *   The charge source.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCharge
+   * @return self
+   *   Self for chaining.
    */
-  public function setSource(object $source): self {
+  public function setSource($source): self {
     $this->source = $source;
 
     return $this;
