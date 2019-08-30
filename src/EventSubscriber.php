@@ -62,11 +62,12 @@ class EventSubscriber implements EventSubscriberInterface {
    *   The payment event.
    */
   public function onProcessPayment(PaymentEvent $event) {
-    // Process the payment and update its state.
-    $payment = $event->getPayment();
     $charge = $event->getCharge();
-    $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
-    $paymentGatewayPlugin->processPayment($payment, $charge);
+    if ($charge instanceof ReepayCharge) {
+      $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
+      $payment = $paymentGatewayPlugin->getPayment($event->getOrder(), $charge);
+      $paymentGatewayPlugin->processPayment($payment, $charge);
+    }
   }
 
   /**
