@@ -7,7 +7,6 @@ namespace Drupal\commerce_payment_reepay\Model;
  *
  * @package Drupal\commerce_payment_reepay\Model
  */
-
 class ReepayCheckoutSession {
 
   /**
@@ -25,15 +24,10 @@ class ReepayCheckoutSession {
   public $url = '';
 
   /**
-   * ReepayCheckoutSession constructor.
-   */
-  public function __construct() {
-  }
-
-  /**
    * Get the session ID.
    *
    * @return string
+   *   The session ID.
    */
   public function getId(): string {
     return $this->id;
@@ -43,12 +37,13 @@ class ReepayCheckoutSession {
    * Set the session ID.
    *
    * @param string $id
+   *   The session ID.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCheckoutSession
+   * @return self
+   *   Self for chaining.
    */
   public function setId(string $id): self {
     $this->id = $id;
-
     return $this;
   }
 
@@ -56,6 +51,7 @@ class ReepayCheckoutSession {
    * Get the payment url.
    *
    * @return string
+   *   The payment url.
    */
   public function getUrl(): string {
     return $this->url;
@@ -64,13 +60,14 @@ class ReepayCheckoutSession {
   /**
    * Set the payment url.
    *
-   * @param string $plan
+   * @param string $url
+   *   The payment url.
    *
-   * @return \Drupal\commerce_payment_reepay\Model\ReepayCheckoutSession
+   * @return self
+   *   Self for chaining.
    */
   public function setUrl(string $url): self {
     $this->url = $url;
-
     return $this;
   }
 

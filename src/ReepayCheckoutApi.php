@@ -2,9 +2,6 @@
 
 namespace Drupal\commerce_payment_reepay;
 
-use Drupal\commerce_order\Entity\Order;
-use Drupal\Core\Site\Settings;
-use GuzzleHttp\psr7\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
@@ -12,7 +9,7 @@ use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 /**
- * Class ReepayCheckoutApi
+ * Class ReepayCheckoutApi.
  *
  * @package Drupal\commerce_payment_reepay
  */
@@ -28,7 +25,7 @@ class ReepayCheckoutApi {
   /**
    * The Guzzle HTTP client.
    *
-   * @var \GuzzleHttp\Client;
+   * @var \GuzzleHttp\Client
    */
   protected $httpClient;
 
@@ -151,11 +148,13 @@ class ReepayCheckoutApi {
   }
 
   /**
-   * Deserialize exception response,
+   * Deserialize exception response.
    *
    * @param \GuzzleHttp\Exception\RequestException $exception
+   *   The request exception.
    *
    * @return mixed
+   *   An array with error message or the message.
    */
   protected function handleException(RequestException $exception) {
     $response = $exception->getResponse();

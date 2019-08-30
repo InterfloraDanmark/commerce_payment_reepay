@@ -15,6 +15,9 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * The ReepayCheckoutForm.
+ */
 class ReepayCheckoutForm extends PaymentOffsiteForm implements ContainerInjectionInterface {
 
   use LoggerChannelTrait;
@@ -30,15 +33,15 @@ class ReepayCheckoutForm extends PaymentOffsiteForm implements ContainerInjectio
   /**
    * Constructs a new ReepayCheckoutForm.
    *
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
    *   The event dispatcher used to notify subscribers of config import events.
    */
-  function __construct(EventDispatcherInterface $eventDispatcher) {
+  public function __construct(EventDispatcherInterface $eventDispatcher) {
     $this->eventDispatcher = $eventDispatcher;
   }
 
   /**
-   * {@inheritdoc]
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
@@ -126,7 +129,8 @@ class ReepayCheckoutForm extends PaymentOffsiteForm implements ContainerInjectio
     $stepId = $routeMatch->getParameter('step');
     $redirectStepId = $checkoutFlowPlugin->getPreviousStepId($stepId);
     $checkoutFlowPlugin->redirectToStep($redirectStepId);
-    // Method will never return because redirectToStep() will throw an exception.
+    // Method will never return because redirectToStep() will throw an
+    // exception.
   }
 
 }

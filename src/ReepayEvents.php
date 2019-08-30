@@ -24,7 +24,7 @@ final class ReepayEvents {
   const PROCESS_PAYMENT = 'commerce_payment_reepay.event.process_payment';
 
   /**
-   * The name of the event fired when processing a webhook
+   * The name of the event fired when processing a webhook.
    *
    * @Event
    */

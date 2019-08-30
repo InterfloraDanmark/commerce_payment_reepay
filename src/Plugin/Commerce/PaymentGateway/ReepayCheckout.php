@@ -95,9 +95,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    *   The payment method type manager.
    * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time.
-   * @param \Drupal\Component\Datetime\TimeInterface $time
-   *   The time.
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
    *   The event dispatcher.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, PaymentTypeManager $payment_type_manager, PaymentMethodTypeManager $payment_method_type_manager, TimeInterface $time, EventDispatcherInterface $eventDispatcher) {
@@ -130,15 +128,15 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    */
   public function defaultConfiguration() {
     return [
-        'public_key' => '',
-        'private_key' => '',
-        'webhook_key' => '',
-        'checkout_type' => 'redirect',
-        'session_type' => 'charge',
-        'configuration_handle' => '',
-        'locale' => '',
-        'order_number_prefix' => '',
-        'button_text' => '',
+      'public_key' => '',
+      'private_key' => '',
+      'webhook_key' => '',
+      'checkout_type' => 'redirect',
+      'session_type' => 'charge',
+      'configuration_handle' => '',
+      'locale' => '',
+      'order_number_prefix' => '',
+      'button_text' => '',
     ] + parent::defaultConfiguration();
   }
 
@@ -172,12 +170,10 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       '#attributes' => ['placeholder' => 'webhook_secret_22222222222222222222222222222222'],
     ];
     $checkout_type_description =
-      '<ul>' .
-      '<li>' . $this->t('<em>Redirect</em> - a complete page redirect (without js)', [], ['context' => 'Reepay']) . '</li>' .
+      '<ul><li>' . $this->t('<em>Redirect</em> - a complete page redirect (without js)', [], ['context' => 'Reepay']) . '</li>' .
       '<li>' . $this->t('<em>Window</em> - a complete page redirect', [], ['context' => 'Reepay']) . '</li>' .
       '<li>' . $this->t('<em>Overlay (Modal)</em> - a full page overlay on top of your web page', [], ['context' => 'Reepay']) . '</li>' .
-      '<li>' . $this->t('<em>Embedded</em> - a component integrated directly into your web page', [], ['context' => 'Reepay']) . '</li>' .
-      '</ul>';
+      '<li>' . $this->t('<em>Embedded</em> - a component integrated directly into your web page', [], ['context' => 'Reepay']) . '</li></ul>';
     $form['checkout_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Checkout type', [], ['context' => 'Reepay']),
@@ -227,7 +223,9 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       '#title' => $this->t('Button text', [], ['context' => 'Reepay']),
       '#description' => $this->t('An optional alternative payment button text.', [], ['context' => 'Reepay']),
       '#default_value' => isset($configuration['button_text']) ? $configuration['button_text'] : '',
-      '#attributes' => ['placeholder' => $this->t('Buy', [], ['context' => 'Reepay'])],
+      '#attributes' => [
+        'placeholder' => $this->t('Buy', [], ['context' => 'Reepay']),
+      ],
     ];
     return $form;
   }
@@ -294,7 +292,8 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
           );
           throw new PaymentGatewayException($message);
         }
-        // The return url can be tampered with so check actual status of the charge.
+        // The return url can be tampered with so check actual status of the
+        // charge.
         elseif ($charge->getState() != 'authorized') {
           $message = $this->t(
             'Possible attempt at tampering with return url for order @handle',
@@ -302,7 +301,8 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
           );
           throw new PaymentGatewayException($message);
         }
-        // Add the authorized charge to the PaymentEvent-object for further processing.
+        // Add the authorized charge to the PaymentEvent-object for further
+        // processing.
         $paymentEvent->setCharge($charge);
       }
 
@@ -346,7 +346,8 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
         throw new WebhookException('Signature check failed');
       }
 
-      // Dispatch a LOOKUP_ORDER-event to look up the order by the invoice handle.
+      // Dispatch a LOOKUP_ORDER-event to look up the order by the invoice
+      // handle.
       $this->eventDispatcher->dispatch(ReepayEvents::LOOKUP_ORDER, $webhookEvent);
       if (!$webhookEvent->getOrder() instanceof OrderInterface) {
         throw new WebhookException('Could not look up order by handle: ' . $webhookEvent->getInvoiceHandle());
@@ -372,7 +373,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
   /**
    * Get the Reepay API.
    *
-   * @return \Drupal\commerce_payment_reepay\ReepayApi;
+   * @return \Drupal\commerce_payment_reepay\ReepayApi
    *   The API client.
    */
   public function getReepayApi() {
@@ -382,7 +383,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
   /**
    * Get the Reepay Checkout API.
    *
-   * @return \Drupal\commerce_payment_reepay\ReepayCheckoutApi;
+   * @return \Drupal\commerce_payment_reepay\ReepayCheckoutApi
    *   The API client.
    */
   public function getReepayCheckoutApi() {
@@ -395,7 +396,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    * @param array $properties
    *   An array of properties and their value.
    *
-   * @return \Drupal\commerce_order\Entity\OrderInterface|NULL
+   * @return \Drupal\commerce_order\Entity\OrderInterface|null
    *   The order or NULL if not found.
    */
   public function loadOrderByProperties(array $properties) {
@@ -458,6 +459,8 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    *
    * @param \Drupal\commerce_payment\Entity\PaymentInterface $payment
    *   The payment to process.
+   * @param \Drupal\commerce_payment\Model\ReepayCharge $charge
+   *   The charge.
    */
   public function processPayment(PaymentInterface $payment, ReepayCharge $charge) {
     $paymentState = $payment->getState();
@@ -467,9 +470,11 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       case 'authorized':
         $transition = $workflow->getTransition('authorize');
         break;
+
       case 'settled':
         $transition = $workflow->getTransition('capture');
         break;
+
       case 'failed':
       case 'cancelled':
         $transition = $workflow->getTransition('void');

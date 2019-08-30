@@ -2,12 +2,9 @@
 
 namespace Drupal\commerce_payment_reepay;
 
-use Drupal\commerce_order\Entity\Order;
 use GuzzleHttp\Client;
-use Drupal\Core\Site\Settings;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -155,7 +152,7 @@ class ReepayApi {
    * @return mixed
    *   The server response.
    */
-  protected function getRequest($url, $class, $options = []) {
+  protected function getRequest($url, $class, array $options = []) {
     $options = array_merge($options, $this->getHeaders());
     try {
       $response = $this->client->get($url, $options);
@@ -168,6 +165,8 @@ class ReepayApi {
   }
 
   /**
+   * Deserialize response.
+   *
    * @param string $body
    *   The content to deserialize.
    * @param string $class
@@ -188,9 +187,13 @@ class ReepayApi {
   }
 
   /**
+   * Deserialize exception response.
+   *
    * @param \GuzzleHttp\Exception\RequestException $exception
+   *   The request exception.
    *
    * @return mixed
+   *   An array with error message or the message.
    */
   protected function handleException(RequestException $exception) {
     return json_decode(
@@ -202,21 +205,26 @@ class ReepayApi {
   }
 
   /**
+   * Get a list of plans.
+   *
    * @param bool $only_active
+   *   Only return active plans.
+   *
    * @return mixed
+   *   A list of plans.
    */
   public function getListOfPlans($only_active = TRUE) {
     return $this->getRequest('plan', 'PlanList', [
       'query' => [
         'only_active' => $only_active,
-      ]
+      ],
     ]);
   }
 
   /**
    * Create a new customer.
    *
-   * @param string $data
+   * @param string $customer
    *   The customer data.
    *
    * @return mixed
@@ -242,8 +250,10 @@ class ReepayApi {
   /**
    * Create a new invoice.
    *
-   * @param string $data
+   * @param string $invoice
    *   The invoice data.
+   * @param string $subscriptionId
+   *   The subscription id.
    *
    * @return mixed
    *   The response object or FALSE.
@@ -332,10 +342,10 @@ class ReepayApi {
   }
 
   /**
-   * Load a subscription.
+   * Get a webhook.
    *
-   * @param string $subscription_id
-   *   The subscription id.
+   * @param string $id
+   *   The webhook id.
    *
    * @return mixed
    *   The response object or FALSE.
@@ -373,10 +383,10 @@ class ReepayApi {
   }
 
   /**
-   * Cancel a subscription.
+   * Cancel a plan.
    *
-   * @param string $subscription_id
-   *   The subscription id.
+   * @param string $plan_id
+   *   The plan id.
    *
    * @return mixed
    *   The response object or FALSE.
@@ -390,6 +400,8 @@ class ReepayApi {
    *
    * @param string $addOnId
    *   The addon id.
+   * @param mixed $data
+   *   The data.
    *
    * @return mixed
    *   The response object or FALSE.
