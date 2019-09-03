@@ -39,10 +39,11 @@ class EventSubscriber implements EventSubscriberInterface {
   public function onCreateCheckoutSession(CheckoutSessionEvent $event) {
     $order = $event->getOrder();
     $configuration = $event->getPaymentGateway()->getPluginConfiguration();
+    $sessionType = $configuration['session_type'];
     $sessionData = $event->getSessionData();
-    // If neither 'order' nor 'invoice' have been populated set defaults
-    // before creating the session.
-    if (empty($sessionData['order']) && empty($sessionData['invoice'])) {
+    // If this is a charge session and neither 'order' nor 'invoice' have been
+    // populated set defaults before creating the session.
+    if ($sessionType == 'charge' && empty($sessionData['order']) && empty($sessionData['invoice'])) {
       $orderHandle = $configuration['order_number_prefix'] . $order->id();
       $totalPrice = $order->getTotalPrice();
       $sessionData['order'] = [
@@ -53,6 +54,15 @@ class EventSubscriber implements EventSubscriberInterface {
         'customer' => [
           'email' => $order->mail->value,
         ],
+      ];
+      $event->setSessionData($sessionData);
+    }
+    // If it's a recurring session and customer is missing the default is to
+    // create a customer with the order email.
+    elseif ($sessionType == 'recurring' && empty($sessionData['create_customer']) && empty($sessionData['customer'])) {
+      $sessionData['create_customer'] = [
+        'email' => $order->mail->value,
+        'generate_handle' => TRUE,
       ];
       $event->setSessionData($sessionData);
     }
