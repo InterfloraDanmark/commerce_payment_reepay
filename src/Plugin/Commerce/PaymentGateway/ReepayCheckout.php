@@ -435,7 +435,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       return $this->paymentStorage->load($payment_id);
     }
     elseif (count($payments) > 1) {
-      throw new PaymentGatewayException('');
+      throw new PaymentGatewayException('More than one payment found for order');
     }
 
     $source = $charge->getSource();
