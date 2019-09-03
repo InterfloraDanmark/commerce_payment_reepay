@@ -87,6 +87,9 @@ class ReepayCheckoutForm extends PaymentOffsiteForm implements ContainerInjectio
         $checkoutSession = $checkoutApi->createRecurringSession($sessionData);
       }
       if (!$checkoutSession instanceof ReepayCheckoutSession) {
+        if (is_array($checkoutSession) && !empty($checkoutSession['message'])) {
+          throw new WebhookException($checkoutSession['message']);
+        }
         throw new WebhookException('No session returned from API');
       }
     }
