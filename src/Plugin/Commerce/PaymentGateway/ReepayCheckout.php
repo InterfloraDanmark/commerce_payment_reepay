@@ -135,7 +135,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       'session_type' => 'charge',
       'configuration_handle' => '',
       'locale' => '',
-      'order_number_prefix' => '',
+      'order_handle_prefix' => '',
       'button_text' => '',
     ] + parent::defaultConfiguration();
   }
@@ -211,11 +211,11 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       '#default_value' => isset($configuration['locale']) ? $configuration['locale'] : '',
       '#attributes' => ['placeholder' => 'en_US'],
     ];
-    $form['order_number_prefix'] = [
+    $form['order_handle_prefix'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Order number prefix', [], ['context' => 'Reepay']),
+      '#title' => $this->t('Order handle prefix', [], ['context' => 'Reepay']),
       '#description' => $this->t('An optional value to prefix the order number with.', [], ['context' => 'Reepay']),
-      '#default_value' => isset($configuration['order_number_prefix']) ? $configuration['order_number_prefix'] : '',
+      '#default_value' => isset($configuration['order_handle_prefix']) ? $configuration['order_handle_prefix'] : '',
       '#attributes' => ['placeholder' => '99-'],
     ];
     $form['button_text'] = [
@@ -244,7 +244,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       $this->configuration['session_type'] = $values['session_type'];
       $this->configuration['configuration_handle'] = $values['configuration_handle'];
       $this->configuration['locale'] = $values['locale'];
-      $this->configuration['order_number_prefix'] = $values['order_number_prefix'];
+      $this->configuration['order_handle_prefix'] = $values['order_handle_prefix'];
       $this->configuration['button_text'] = $values['button_text'];
     }
   }
