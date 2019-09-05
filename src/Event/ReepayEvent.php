@@ -4,6 +4,7 @@ namespace Drupal\commerce_payment_reepay\Event;
 
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
+use Drupal\commerce_payment_reepay\ReepayApi;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -26,6 +27,13 @@ abstract class ReepayEvent extends Event {
   protected $order;
 
   /**
+   * The Reepay API.
+   *
+   * @var Drupal\commerce_payment_reepay\ReepayAPI
+   */
+  protected $reepayApi;
+
+  /**
    * Constructs a new ReepayEvent.
    *
    * @param \Drupal\commerce_payment\Entity\PaymentGatewayInterface $paymentGateway
@@ -36,6 +44,8 @@ abstract class ReepayEvent extends Event {
   public function __construct(PaymentGatewayInterface $paymentGateway, ?OrderInterface $order) {
     $this->paymentGateway = $paymentGateway;
     $this->order = $order;
+    $configuration = $paymentGateway->getPluginConfiguration();
+    $this->reepayApi = new ReepayApi($configuration['private_key']);
   }
 
   /**
@@ -70,6 +80,16 @@ abstract class ReepayEvent extends Event {
   public function setOrder(?OrderInterface $order): self {
     $this->order = $order;
     return $this;
+  }
+
+  /**
+   * Get the Reepay API object.
+   *
+   * @return \Drupal\commerce_payment_reepay\ReepayAPI
+   *   The Reepay API object.
+   */
+  public function getReepayApi() {
+    return $this->reepayApi;
   }
 
 }
