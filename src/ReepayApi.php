@@ -222,6 +222,19 @@ class ReepayApi {
   }
 
   /**
+   * Get an existing customer by its handle.
+   *
+   * @param string $handle
+   *   The customer handle.
+   *
+   * @return \Drupal\commerce_payment_reepay\Model\ReepayCustomer|array
+   *   The customer object or an array with an error.
+   */
+  public function getCustomer(string $handle) {
+    return $this->getRequest('customer/' . $handle, 'ReepayCustomer');
+  }
+
+  /**
    * Create a new customer.
    *
    * @param string $customer
