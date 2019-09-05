@@ -4,26 +4,11 @@ namespace Drupal\commerce_payment_reepay\Event;
 
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\commerce_payment\Entity\PaymentGatewayInterface;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * The CheckoutSessionEvent class.
  */
-class CheckoutSessionEvent extends Event {
-
-  /**
-   * The payment gateway.
-   *
-   * @var \Drupal\commerce_payment\Entity\PaymentGatewayInterface
-   */
-  protected $paymentGateway;
-
-  /**
-   * The order.
-   *
-   * @var \Drupal\commerce_order\Entity\OrderInterface
-   */
-  protected $order;
+class CheckoutSessionEvent extends ReepayEvent {
 
   /**
    * The session data.
@@ -43,29 +28,8 @@ class CheckoutSessionEvent extends Event {
    *   The session data.
    */
   public function __construct(PaymentGatewayInterface $paymentGateway, OrderInterface $order, array $sessionData) {
-    $this->paymentGateway = $paymentGateway;
-    $this->order = $order;
+    parent::__construct($paymentGateway, $order);
     $this->sessionData = $sessionData;
-  }
-
-  /**
-   * Get the payment gateway.
-   *
-   * @return \Drupal\commerce_payment\Entity\PaymentGatewayInterface
-   *   The payment gateway.
-   */
-  public function getPaymentGateway(): PaymentGatewayInterface {
-    return $this->paymentGateway;
-  }
-
-  /**
-   * Get the order.
-   *
-   * @return \Drupal\commerce_order\Entity\OrderInterface
-   *   The order.
-   */
-  public function getOrder() {
-    return $this->order;
   }
 
   /**
