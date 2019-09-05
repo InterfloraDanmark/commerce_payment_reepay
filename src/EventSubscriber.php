@@ -57,14 +57,9 @@ class EventSubscriber implements EventSubscriberInterface {
       ];
       $event->setSessionData($sessionData);
     }
-    // If it's a recurring session and customer is missing the default is to
-    // create a customer with the order email.
-    elseif ($sessionType == 'recurring' && empty($sessionData['create_customer']) && empty($sessionData['customer'])) {
-      $sessionData['create_customer'] = [
-        'email' => $order->mail->value,
-        'generate_handle' => TRUE,
-      ];
-      $event->setSessionData($sessionData);
+    // Recurring sessions need a custom implementation.
+    elseif ($sessionType == 'recurring') {
+      // Do nothing.
     }
   }
 
