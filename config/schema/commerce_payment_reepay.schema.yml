@@ -41,6 +41,9 @@ commerce_payment.commerce_payment_gateway.plugin.reepay_checkout:
     order_handle_prefix:
       type: string
       label: 'Order handle prefix'
+    customer_handle_prefix:
+      type: string
+      label: 'Customer handle prefix'
     button_text:
       type: string
       label: 'Button text'
