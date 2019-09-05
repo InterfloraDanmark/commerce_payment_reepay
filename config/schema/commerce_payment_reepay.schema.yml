@@ -38,9 +38,9 @@ commerce_payment.commerce_payment_gateway.plugin.reepay_checkout:
     locale:
       type: string
       label: 'Locale'
-    order_number_prefix:
+    order_handle_prefix:
       type: string
-      label: 'Order number prefix'
+      label: 'Order handle prefix'
     button_text:
       type: string
       label: 'Button text'

@@ -44,7 +44,7 @@ class EventSubscriber implements EventSubscriberInterface {
     // If this is a charge session and neither 'order' nor 'invoice' have been
     // populated set defaults before creating the session.
     if ($sessionType == 'charge' && empty($sessionData['order']) && empty($sessionData['invoice'])) {
-      $orderHandle = $configuration['order_number_prefix'] . $order->id();
+      $orderHandle = $configuration['order_handle_prefix'] . $order->id();
       $totalPrice = $order->getTotalPrice();
       $sessionData['order'] = [
         'handle' => $orderHandle,
@@ -116,7 +116,7 @@ class EventSubscriber implements EventSubscriberInterface {
       $invoiceHandle = $event->getInvoiceHandle() ?? '';
       $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
       $configuration = $paymentGatewayPlugin->getConfiguration();
-      $orderNumberPrefix = $configuration['order_number_prefix'];
+      $orderNumberPrefix = $configuration['order_handle_prefix'];
       if (strpos($invoiceHandle, $orderNumberPrefix) === 0) {
         $orderId = substr($invoiceHandle, strlen($orderNumberPrefix));
         $order = $paymentGatewayPlugin->loadOrderByProperties(['order_id' => $orderId]);
