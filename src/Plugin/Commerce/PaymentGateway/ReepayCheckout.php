@@ -429,10 +429,12 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    *   The payment object.
    */
   public function getPayment(OrderInterface $order, ReepayCharge $charge): PaymentInterface {
+    // Settled transactions does not always have an auth_transaction so
+    // default to charge transactions.
     if ($charge->getState() == 'settled') {
-      $remoteId = $charge->getSource()->auth_transaction;
+      $remoteId = $charge->getSource()->auth_transaction ?? NULL;
     }
-    else {
+    if (empty($remoteId)) {
       $remoteId = $charge->getTransaction();
     }
     $query = $this->paymentStorage->getQuery()
