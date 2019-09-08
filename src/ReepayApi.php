@@ -253,6 +253,19 @@ class ReepayApi {
   }
 
   /**
+   * Get customer payment methods.
+   *
+   * @param string $customer_handle
+   *   The customer handle.
+   *
+   * @return array
+   *   An array of cards or an error.
+   */
+  public function getCustomerPaymentMethods(string $customer_handle) {
+    return $this->getRequest('customer/' . $customer_handle . '/payment_method', 'ReepayCard', [], 'cards');
+  }
+
+  /**
    * Create a new customer.
    *
    * @param string $customer
