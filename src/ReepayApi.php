@@ -316,6 +316,27 @@ class ReepayApi {
   }
 
   /**
+   * Settle an invoice.
+   *
+   * @param string $invoice_handle
+   *   The invoice handle.
+   * @param string $due_date
+   *   The optional due date.
+   * @param string $payment_method
+   *   The optional payment method. Defaults to 'auto'.
+   *
+   * @return mixed
+   *   The invoice object or FALSE.
+   */
+  public function settleInvoice($invoice_handle, $due_date = NULL, $payment_method = 'auto') {
+    $data = [
+      'due_date' => $due_date,
+      'payment_method' => $payment_method,
+    ];
+    return $this->postRequest('invoice/' . $invoice_handle . '/settle', $data, 'ReepayInvoice');
+  }
+
+  /**
    * Load a plan.
    *
    * @param string $plan_id
