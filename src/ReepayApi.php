@@ -148,15 +148,17 @@ class ReepayApi {
    *   Name of the class to deserialize to.
    * @param array $options
    *   Extra options for the request.
+   * @param mixed $array_key
+   *   An optional key for getting an array of objects.
    *
    * @return mixed
    *   The server response.
    */
-  protected function getRequest($url, $class, array $options = []) {
+  protected function getRequest($url, $class, array $options = [], $array_key = NULL) {
     $options = array_merge($options, $this->getHeaders());
     try {
       $response = $this->client->get($url, $options);
-      $responseBody = $this->handleResponse($response->getBody()->getContents(), $class);
+      $responseBody = $this->handleResponse($response->getBody()->getContents(), $class, $array_key);
     }
     catch (RequestException $exception) {
       $responseBody = $this->handleException($exception);
@@ -171,14 +173,30 @@ class ReepayApi {
    *   The content to deserialize.
    * @param string $class
    *   The content class name.
+   * @param mixed $array_key
+   *   An optional key for getting an array of objects.
    *
    * @return object
    *   A class or a json object.
    */
-  protected function handleResponse($body, $class) {
+  protected function handleResponse($body, $class, $array_key = NULL) {
     $className = 'Drupal\\commerce_payment_reepay\\Model\\' . $class;
     if ($class !== '' && class_exists($className)) {
-      $content = $this->serializer->deserialize($body, $className, 'json');
+      if ($array_key !== NULL) {
+        if ($array_key !== FALSE) {
+          $objects = json_decode($body)->$array_key;
+        }
+        else {
+          $objects = json_decode($body);
+        }
+        $content = [];
+        foreach ($objects as $obj) {
+          $content[] = $this->serializer->deserialize(json_encode($obj), $className, 'json');
+        }
+      }
+      else {
+        $content = $this->serializer->deserialize($body, $className, 'json');
+      }
     }
     else {
       $content = json_decode($body);
