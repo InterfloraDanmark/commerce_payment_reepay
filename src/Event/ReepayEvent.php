@@ -41,7 +41,7 @@ abstract class ReepayEvent extends Event {
    * @param \Drupal\commerce_order\Entity\OrderInterface|null $order
    *   The order.
    */
-  public function __construct(PaymentGatewayInterface $paymentGateway, ?OrderInterface $order) {
+  public function __construct(PaymentGatewayInterface $paymentGateway, ?OrderInterface $order = NULL) {
     $this->paymentGateway = $paymentGateway;
     $this->order = $order;
     $configuration = $paymentGateway->getPluginConfiguration();
