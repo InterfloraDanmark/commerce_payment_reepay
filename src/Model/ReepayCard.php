@@ -30,6 +30,14 @@ class ReepayCard {
    */
   public $customer = '';
 
+
+  /**
+   * The card type.
+   *
+   * @var string
+   */
+  public $cardType = '';
+
   /**
    * ReepayCard constructor.
    */
@@ -107,6 +115,53 @@ class ReepayCard {
   public function setCustomer(string $customer): self {
     $this->customer = $customer;
     return $this;
+  }
+
+  /**
+   * Get the card type.
+   *
+   * @return string
+   *   The card type.
+   */
+  public function getCardType(): string {
+    return $this->cardType;
+  }
+
+  /**
+   * Set the card type.
+   *
+   * @param string $cardType
+   *   The card type.
+   *
+   * @return self
+   *   Self for chaining.
+   */
+  public function setCardType(string $cardType): self {
+    $this->cardType = $cardType;
+    return $this;
+  }
+
+  /**
+   * Get the card type.
+   *
+   * @return string
+   *   The card type.
+   */
+  public function getCard_Type(): string {
+    return $this->getCardType();
+  }
+
+  /**
+   * Set the card type.
+   *
+   * @param string $cardType
+   *   The card type.
+   *
+   * @return self
+   *   Self for chaining.
+   */
+  public function setCard_Type(string $cardType): self {
+    return $this->setCardType($cardType);
   }
 
 }
