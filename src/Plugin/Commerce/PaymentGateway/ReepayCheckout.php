@@ -303,7 +303,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
         }
         // The return url can be tampered with so check actual status of the
         // charge.
-        elseif ($charge->getState() != 'authorized') {
+        elseif (!in_array($charge->getState(), ['authorized', 'settled'])) {
           $message = $this->t(
             'Possible attempt at tampering with return url for order @handle',
             ['@handle' => $invoiceHandle]
