@@ -51,7 +51,7 @@ class ReepayInvoiceOrderItem {
   /**
    * @param string $orderText
    *
-   * @return \Drupal\commerce_payment_reepay\Model\InvoiceOrderItem
+   * @return \Drupal\commerce_payment_reepay\Model\ReepayInvoiceOrderItem
    */
   public function setOrderText(string $orderText): self {
     $this->ordertext = $orderText;
@@ -69,7 +69,7 @@ class ReepayInvoiceOrderItem {
   /**
    * @param int $amount
    *
-   * @return \Drupal\commerce_payment_reepay\Model\InvoiceOrderItem
+   * @return \Drupal\commerce_payment_reepay\Model\ReepayInvoiceOrderItem
    */
   public function setAmount(int $amount): self {
     $this->amount = $amount;
@@ -87,7 +87,7 @@ class ReepayInvoiceOrderItem {
   /**
    * @param int $vat
    *
-   * @return \Drupal\commerce_payment_reepay\Model\InvoiceOrderItem
+   * @return \Drupal\commerce_payment_reepay\Model\ReepayInvoiceOrderItem
    */
   public function setVat(int $vat): self {
     $this->vat = $vat;
@@ -105,7 +105,7 @@ class ReepayInvoiceOrderItem {
   /**
    * @param int $quantity
    *
-   * @return \Drupal\commerce_payment_reepay\Model\InvoiceOrderItem
+   * @return \Drupal\commerce_payment_reepay\Model\ReepayInvoiceOrderItem
    */
   public function setQuantity(int $quantity): self {
     $this->quantity = $quantity;
@@ -123,7 +123,7 @@ class ReepayInvoiceOrderItem {
   /**
    * @param bool $amount_incl_vat
    *
-   * @return \Drupal\commerce_payment_reepay\Model\InvoiceOrderItem
+   * @return \Drupal\commerce_payment_reepay\Model\ReepayInvoiceOrderItem
    */
   public function setAmountInclVat(bool $amount_incl_vat): self {
     $this->amount_incl_vat = $amount_incl_vat;

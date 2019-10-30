@@ -54,6 +54,13 @@ class ReepayCharge {
   public $source = NULL;
 
   /**
+   * Recurring payment method.
+   *
+   * @var string
+   */
+  public $recurring_payment_method = '';
+
+  /**
    * ReepayCharge constructor.
    */
   public function __construct() {
@@ -231,6 +238,31 @@ class ReepayCharge {
    */
   public function setSource($source): self {
     $this->source = $source;
+
+    return $this;
+  }
+
+  /**
+   * Get recurring payment method.
+   *
+   * @return string
+   *   The recurring payment method.
+   */
+  public function getRecurring_payment_method(): string {
+    return $this->recurring_payment_method;
+  }
+
+  /**
+   * Set recurring payment method.
+   *
+   * @param string $recurringPaymentMethod
+   *    The recurring payment method.
+   *
+   * @return self
+   *   Self for chaining.
+   */
+  public function setRecurring_payment_method(string $recurringPaymentMethod): self {
+    $this->recurring_payment_method = $recurringPaymentMethod;
 
     return $this;
   }
