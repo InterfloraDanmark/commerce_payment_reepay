@@ -2,25 +2,21 @@
 
 namespace Drupal\commerce_payment_reepay;
 
-use Drupal\commerce_order\Entity\Order;
-use Drupal\serialization\Encoder\XmlEncoder;
 use GuzzleHttp\Client;
-use Drupal\Core\Site\Settings;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 /**
- * Class CrmApi
+ * Class ReepayApi.
  *
- * @package Drupal\interflora_crm
+ * @package Drupal\commerce_payment_reepay
  */
 class ReepayApi {
 
   /**
-   * Base reepay url.
+   * Reepay base URL.
    *
    * @var string
    */
@@ -29,14 +25,19 @@ class ReepayApi {
   /**
    * The guzzle client.
    *
-   * @var Client
+   * @var \GuzzleHttp\Client
    */
   private $client;
 
+  /**
+   * The serializer.
+   *
+   * @var \Symfony\Component\Serializer\Serializer
+   */
   private $serializer;
 
   /**
-   * CrmApi constructor.
+   * ReepayApi constructor.
    *
    * @param string $privateKey
    *   The Reepay private key.
@@ -77,7 +78,7 @@ class ReepayApi {
   }
 
   /**
-   * Perform a POST request to the CRM.
+   * Perform a POST request.
    *
    * @param string $url
    *   The POST url to call.
@@ -108,7 +109,7 @@ class ReepayApi {
   }
 
   /**
-   * Perform a POST request to the CRM.
+   * Perform a POST request.
    *
    * @param string $url
    *   The POST url to call.
@@ -147,15 +148,17 @@ class ReepayApi {
    *   Name of the class to deserialize to.
    * @param array $options
    *   Extra options for the request.
+   * @param mixed $array_key
+   *   An optional key for getting an array of objects.
    *
    * @return mixed
    *   The server response.
    */
-  protected function getRequest($url, $class, $options = []) {
+  protected function getRequest($url, $class, array $options = [], $array_key = NULL) {
     $options = array_merge($options, $this->getHeaders());
     try {
       $response = $this->client->get($url, $options);
-      $responseBody = $this->handleResponse($response->getBody()->getContents(), $class);
+      $responseBody = $this->handleResponse($response->getBody()->getContents(), $class, $array_key);
     }
     catch (RequestException $exception) {
       $responseBody = $this->handleException($exception);
@@ -164,18 +167,36 @@ class ReepayApi {
   }
 
   /**
+   * Deserialize response.
+   *
    * @param string $body
    *   The content to deserialize.
    * @param string $class
    *   The content class name.
+   * @param mixed $array_key
+   *   An optional key for getting an array of objects.
    *
    * @return object
    *   A class or a json object.
    */
-  protected function handleResponse($body, $class) {
+  protected function handleResponse($body, $class, $array_key = NULL) {
     $className = 'Drupal\\commerce_payment_reepay\\Model\\' . $class;
     if ($class !== '' && class_exists($className)) {
-      $content = $this->serializer->deserialize($body, $className, 'json');
+      if ($array_key !== NULL) {
+        if ($array_key !== FALSE) {
+          $objects = json_decode($body)->$array_key;
+        }
+        else {
+          $objects = json_decode($body);
+        }
+        $content = [];
+        foreach ($objects as $obj) {
+          $content[] = $this->serializer->deserialize(json_encode($obj), $className, 'json');
+        }
+      }
+      else {
+        $content = $this->serializer->deserialize($body, $className, 'json');
+      }
     }
     else {
       $content = json_decode($body);
@@ -184,9 +205,13 @@ class ReepayApi {
   }
 
   /**
+   * Deserialize exception response.
+   *
    * @param \GuzzleHttp\Exception\RequestException $exception
+   *   The request exception.
    *
    * @return mixed
+   *   An array with error message or the message.
    */
   protected function handleException(RequestException $exception) {
     return json_decode(
@@ -198,21 +223,52 @@ class ReepayApi {
   }
 
   /**
+   * Get a list of plans.
+   *
    * @param bool $only_active
+   *   Only return active plans.
+   *
    * @return mixed
+   *   A list of plans.
    */
   public function getListOfPlans($only_active = TRUE) {
     return $this->getRequest('plan', 'PlanList', [
       'query' => [
         'only_active' => $only_active,
-      ]
+      ],
     ]);
+  }
+
+  /**
+   * Get an existing customer by its handle.
+   *
+   * @param string $handle
+   *   The customer handle.
+   *
+   * @return \Drupal\commerce_payment_reepay\Model\ReepayCustomer|array
+   *   The customer object or an array with an error.
+   */
+  public function getCustomer(string $handle) {
+    return $this->getRequest('customer/' . $handle, 'ReepayCustomer');
+  }
+
+  /**
+   * Get customer payment methods.
+   *
+   * @param string $customer_handle
+   *   The customer handle.
+   *
+   * @return array
+   *   An array of cards or an error.
+   */
+  public function getCustomerPaymentMethods(string $customer_handle) {
+    return $this->getRequest('customer/' . $customer_handle . '/payment_method', 'ReepayCard', [], 'cards');
   }
 
   /**
    * Create a new customer.
    *
-   * @param string $data
+   * @param string $customer
    *   The customer data.
    *
    * @return mixed
@@ -238,8 +294,10 @@ class ReepayApi {
   /**
    * Create a new invoice.
    *
-   * @param string $data
+   * @param string $invoice
    *   The invoice data.
+   * @param string $subscriptionId
+   *   The subscription id.
    *
    * @return mixed
    *   The response object or FALSE.
@@ -289,6 +347,27 @@ class ReepayApi {
   }
 
   /**
+   * Settle an invoice.
+   *
+   * @param string $invoice_handle
+   *   The invoice handle.
+   * @param string $due_date
+   *   The optional due date.
+   * @param string $payment_method
+   *   The optional payment method. Defaults to 'auto'.
+   *
+   * @return mixed
+   *   The invoice object or FALSE.
+   */
+  public function settleInvoice($invoice_handle, $due_date = NULL, $payment_method = 'auto') {
+    $data = [
+      'due_date' => $due_date,
+      'payment_method' => $payment_method,
+    ];
+    return $this->postRequest('invoice/' . $invoice_handle . '/settle', $data, 'ReepayInvoice');
+  }
+
+  /**
    * Load a plan.
    *
    * @param string $plan_id
@@ -328,10 +407,10 @@ class ReepayApi {
   }
 
   /**
-   * Load a subscription.
+   * Get a webhook.
    *
-   * @param string $subscription_id
-   *   The subscription id.
+   * @param string $id
+   *   The webhook id.
    *
    * @return mixed
    *   The response object or FALSE.
@@ -369,10 +448,10 @@ class ReepayApi {
   }
 
   /**
-   * Cancel a subscription.
+   * Cancel a plan.
    *
-   * @param string $subscription_id
-   *   The subscription id.
+   * @param string $plan_id
+   *   The plan id.
    *
    * @return mixed
    *   The response object or FALSE.
@@ -386,6 +465,8 @@ class ReepayApi {
    *
    * @param string $addOnId
    *   The addon id.
+   * @param mixed $data
+   *   The data.
    *
    * @return mixed
    *   The response object or FALSE.
@@ -405,6 +486,19 @@ class ReepayApi {
    */
   public function deleteAddOn($addOnId) {
     return $this->postRequest(sprintf('add_on/%s', $addOnId));
+  }
+
+  /**
+   * Get a charge.
+   *
+   * @param string $handle
+   *   The charge handle.
+   *
+   * @return mixed
+   *   The charge object or FALSE.
+   */
+  public function getCharge(string $handle) {
+    return $this->getRequest('charge/' . $handle, 'ReepayCharge');
   }
 
 }

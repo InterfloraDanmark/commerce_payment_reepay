@@ -1,0 +1,6 @@
+services:
+  commerce_payment_reepay.event_subscriber:
+    class: Drupal\commerce_payment_reepay\EventSubscriber
+    autowire: true
+    tags:
+    - { name: event_subscriber }

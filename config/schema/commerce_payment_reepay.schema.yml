@@ -1,0 +1,49 @@
+commerce_payment.commerce_payment_gateway.plugin.reepay_offsite:
+  type: commerce_payment_gateway_configuration
+  mapping:
+    public_key:
+      type: string
+      label: 'Public key'
+    private_key:
+      type: string
+      label: 'Private key'
+    webhook_key:
+      type: string
+      label: 'Webhook key'
+    redirect_method:
+      type: string
+      label: 'Redirect method'
+
+commerce_payment.commerce_payment_gateway.plugin.reepay_checkout:
+  type: commerce_payment_gateway_configuration
+  mapping:
+    public_key:
+      type: string
+      label: 'Public key'
+    private_key:
+      type: string
+      label: 'Private key'
+    webhook_key:
+      type: string
+      label: 'Webhook key'
+    checkout_type:
+      type: string
+      label: 'Checkout type'
+    session_type:
+      type: string
+      label: 'Session type'
+    configuration_handle:
+      type: string
+      label: 'Configuration handle'
+    locale:
+      type: string
+      label: 'Locale'
+    order_handle_prefix:
+      type: string
+      label: 'Order handle prefix'
+    customer_handle_prefix:
+      type: string
+      label: 'Customer handle prefix'
+    button_text:
+      type: string
+      label: 'Button text'

@@ -60,6 +60,13 @@ class ReepaySubscription {
   public $hosted_page_links;
 
   /**
+   * The payment method source.
+   *
+   * @var string
+   */
+  public $source = NULL;
+
+  /**
    * ReepaySubscription constructor.
    */
   public function __construct() {
@@ -243,6 +250,30 @@ class ReepaySubscription {
   public function setHosted_page_links(\stdClass $hosted_page_links): self {
     $this->hosted_page_links = $hosted_page_links;
 
+    return $this;
+  }
+
+  /**
+   * Get the payment method source.
+   *
+   * @return string|null
+   *   The source or NULL.
+   */
+  public function getSource() {
+    return $this->source;
+  }
+
+  /**
+   * Set the payment method source.
+   *
+   * @param string $source
+   *   The source.
+   *
+   * @return self
+   *   Self for chaining.
+   */
+  public function setSource(string $source): self {
+    $this->source = $source;
     return $this;
   }
 
