@@ -93,15 +93,16 @@ class EventSubscriber implements EventSubscriberInterface {
       $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
       $invoiceHandle = $event->getInvoiceHandle() ?? '';
       $order = $event->getOrder();
-      $charge = $paymentGatewayPlugin->getReepayApi()->getCharge($invoiceHandle);
-      if (!$charge instanceof ReepayCharge) {
-        throw new WebhookException('Charge not found: ' . $invoiceHandle);
+      if ($order->getState()->value !== 'completed') {
+        $charge = $paymentGatewayPlugin->getReepayApi()
+          ->getCharge($invoiceHandle);
+        \Drupal::logger('reepay')->notice('Charge handle: ' . $charge->handle);
+        if (!$charge instanceof ReepayCharge) {
+          throw new WebhookException('Charge not found: ' . $invoiceHandle);
+        }
+        $payment = $paymentGatewayPlugin->getPayment($order, $charge);
+        $paymentGatewayPlugin->processPayment($payment, $charge);
       }
-      $payment = $paymentGatewayPlugin->getPayment($order, $charge);
-      $paymentGatewayPlugin->processPayment($payment, $charge);
-    }
-    else {
-      throw new WebhookException('Unhandled event type: ' . $event->getEventType());
     }
   }
 
