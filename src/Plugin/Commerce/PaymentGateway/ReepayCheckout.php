@@ -32,10 +32,12 @@ use Symfony\Component\HttpFoundation\Request;
  *   label = @Translation("Reepay Checkout"),
  *   display_label = @Translation("Reepay Checkout"),
  *    forms = {
- *     "offsite-payment" = "Drupal\commerce_payment_reepay\PluginForm\OffsiteRedirect\ReepayCheckoutForm",
+ *     "offsite-payment" =
+ *   "Drupal\commerce_payment_reepay\PluginForm\OffsiteRedirect\ReepayCheckoutForm",
  *   },
  *   credit_card_types = {
- *     "amex", "dinersclub", "discover", "jcb", "maestro", "mastercard", "visa",
+ *     "amex", "dinersclub", "discover", "jcb", "maestro", "mastercard",
+ *   "visa",
  *   },
  * )
  */
@@ -128,17 +130,17 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    */
   public function defaultConfiguration() {
     return [
-      'public_key' => '',
-      'private_key' => '',
-      'webhook_key' => '',
-      'checkout_type' => 'redirect',
-      'session_type' => 'charge',
-      'configuration_handle' => '',
-      'locale' => '',
-      'order_handle_prefix' => '',
-      'customer_handle_prefix' => '',
-      'button_text' => '',
-    ] + parent::defaultConfiguration();
+        'public_key' => '',
+        'private_key' => '',
+        'webhook_key' => '',
+        'checkout_type' => 'redirect',
+        'session_type' => 'charge',
+        'configuration_handle' => '',
+        'locale' => '',
+        'order_handle_prefix' => '',
+        'customer_handle_prefix' => '',
+        'button_text' => '',
+      ] + parent::defaultConfiguration();
   }
 
   /**
@@ -276,7 +278,8 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    */
   public function onReturn(OrderInterface $order, Request $request) {
     try {
-      $paymentGateway = $this->entityTypeManager->getStorage('commerce_payment_gateway')->load($this->entityId);
+      $paymentGateway = $this->entityTypeManager->getStorage('commerce_payment_gateway')
+        ->load($this->entityId);
       $paymentEvent = new PaymentEvent($paymentGateway, $order, $request);
 
       // If the error message was not empty, log it and throw exception to
@@ -318,8 +321,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       // Dispatch a PROCESS_PAYMENT-event to allow other modules to act on a
       // successful payment.
       $this->eventDispatcher->dispatch(ReepayEvents::PROCESS_PAYMENT, $paymentEvent);
-    }
-    catch (\Exception $exception) {
+    } catch (\Exception $exception) {
       // Log the exception message and throw generic payment gateway
       // exceptionwithout error message.
       $this->getLogger('commerce_payment_reepay')->error(
@@ -349,7 +351,8 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
     try {
       // Decode the contents and check the signature.
       $contents = json_decode($request->getContent());
-      $paymentGateway = $this->entityTypeManager->getStorage('commerce_payment_gateway')->load($this->entityId);
+      $paymentGateway = $this->entityTypeManager->getStorage('commerce_payment_gateway')
+        ->load($this->entityId);
       $webhookEvent = new WebhookEvent($paymentGateway, $contents);
       if (!$webhookEvent->validSignature()) {
         throw new WebhookException('Signature check failed');
@@ -359,14 +362,15 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       // handle.
       $this->eventDispatcher->dispatch(ReepayEvents::LOOKUP_ORDER, $webhookEvent);
       if (!$webhookEvent->getOrder() instanceof OrderInterface) {
-        throw new WebhookException('Could not look up order by handle: ' . $webhookEvent->getInvoiceHandle());
+        $this->getLogger('reepay')->notice('Could not look up order by handle: ' . $webhookEvent->getInvoiceHandle());
+        return new Response('Unknown order: ' . $webhookEvent->getInvoiceHandle(), Response::HTTP_OK);
       }
 
       // Dispatch a PROCESS_WEBHOOK-event to allow other modules to act on an
       // incoming webhook before the default event subscriber .
       $this->eventDispatcher->dispatch(ReepayEvents::PROCESS_WEBHOOK, $webhookEvent);
-    }
-    catch (\Exception $exception) {
+      return new Response('Order received: ' . $webhookEvent->getInvoiceHandle(), Response::HTTP_OK);
+    } catch (\Exception $exception) {
       // Log any error and return HTTP Bad request to the client.
       $this->getLogger('commerce_payment_reepay')->error(
         $this->t('Webhook error:<br />@exception<br /><pre>@contents</pre>'),
