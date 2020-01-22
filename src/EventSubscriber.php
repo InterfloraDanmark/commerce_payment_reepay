@@ -86,7 +86,6 @@ class EventSubscriber implements EventSubscriberInterface {
    */
   public function onProcessWebhook(WebhookEvent $event) {
     $handled_events = [
-      'invoice_authorized',
       'invoice_settled',
     ];
     if (in_array($event->getEventType(), $handled_events)) {
@@ -103,6 +102,22 @@ class EventSubscriber implements EventSubscriberInterface {
         $payment = $paymentGatewayPlugin->getPayment($order, $charge);
         $paymentGatewayPlugin->processPayment($payment, $charge);
       }
+    }
+
+    if ($event->getEventType() === 'invoice_authorized') {
+      $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
+      $invoiceHandle = $event->getInvoiceHandle() ?? '';
+      $order = $event->getOrder();
+
+      /** @var \Drupal\Core\Queue\QueueFactory $queue_factory */
+      $queue_factory = \Drupal::service('queue');
+      /** @var \Drupal\Core\Queue\QueueInterface $queue */
+      $queue = $queue_factory->get('reepay_payment_callback_queue');
+      $item = new \stdClass();
+      $item->id = $order->id();
+      $item->paymentPluginId = $paymentGatewayPlugin->getPluginId();
+      $item->invoiceHandle = $invoiceHandle;
+      $queue->createItem($item);
     }
   }
 
