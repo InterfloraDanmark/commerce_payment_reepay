@@ -223,7 +223,7 @@ class ReepayCharge {
    * @return object
    *   The charge source.
    */
-  public function getSource(): object {
+  public function getSource(): ?object {
     return $this->source;
   }
 

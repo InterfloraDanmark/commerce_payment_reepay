@@ -105,7 +105,8 @@ class EventSubscriber implements EventSubscriberInterface {
     }
 
     if ($event->getEventType() === 'invoice_authorized') {
-      $paymentGatewayPlugin = $event->getPaymentGateway()->getPlugin();
+
+      $paymentGatewayPlugin = $event->getPaymentGateway();
       $invoiceHandle = $event->getInvoiceHandle() ?? '';
       $order = $event->getOrder();
 
@@ -115,7 +116,7 @@ class EventSubscriber implements EventSubscriberInterface {
       $queue = $queue_factory->get('reepay_payment_callback_queue');
       $item = new \stdClass();
       $item->id = $order->id();
-      $item->paymentPluginId = $paymentGatewayPlugin->getPluginId();
+      $item->paymentPluginId = $paymentGatewayPlugin->id();
       $item->invoiceHandle = $invoiceHandle;
       $queue->createItem($item);
     }

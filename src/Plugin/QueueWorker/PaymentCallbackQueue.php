@@ -58,20 +58,23 @@ class PaymentCallbackQueue extends QueueWorkerBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function processItem($data) {
-    //$paymentGatewayPluginId = $data->paymentPluginId;
-    //$paymentGatewayPlugin = $this->payment_gateway_storage->load($paymentGatewayPluginId);
+    $paymentGatewayPluginId = $data->paymentPluginId;
     $invoiceHandle = $data->invoiceHandle ?? '';
     $orderId = $data->id;
     $order = Order::load($orderId);
-    $payments = $order->getPayments();
-    /** @var \Drupal\commerce_payment\Entity\Payment $payment */
-    $payment = reset($payments);
-    $paymentGatewayPlugin = $payment->getPaymentGateway()->getPlugin();
+    $paymentGateway = $this->payment_gateway_storage->load($paymentGatewayPluginId);
+    $paymentGatewayPlugin = $paymentGateway->getPlugin();
+    IF (!$paymentGatewayPlugin) {
+      $payments = $order->getPayments();
+      /** @var \Drupal\commerce_payment\Entity\Payment $payment */
+      $payment = reset($payments);
+      $paymentGatewayPlugin = $payment->getPaymentGateway()->getPlugin();
+    }
     $charge = $paymentGatewayPlugin->getReepayApi()->getCharge($invoiceHandle);
     if (!$charge instanceof ReepayCharge) {
       throw new WebhookException('Charge not found: ' . $invoiceHandle);
     }
-    if ($payment && $order->getState()->value === 'draft') {
+    if ($order->getState()->value === 'draft') {
       $disableCallbackTransition = \Drupal::state()
         ->get('reepay.diable_callback_transition', FALSE);
       if (!$disableCallbackTransition) {
