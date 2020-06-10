@@ -443,8 +443,8 @@ class ReepayApi {
    * @return mixed
    *   The response object or FALSE.
    */
-  public function cancelSubscription($subscription_id) {
-    return $this->postRequest(sprintf('subscription/%s/cancel', $subscription_id));
+  public function cancelSubscription($subscription_id, $content) {
+    return $this->postRequest(sprintf('subscription/%s/cancel', $subscription_id), $content);
   }
 
   /**
