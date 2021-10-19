@@ -339,7 +339,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
    * {@inheritdoc}
    */
   public function onCancel(OrderInterface $order, Request $request) {
-    drupal_set_message($this->t('You have canceled checkout at @gateway but may resume the checkout process here when you are ready.', [
+    \Drupal::messenger()->addMessage($this->t('You have canceled checkout at @gateway but may resume the checkout process here when you are ready.', [
       '@gateway' => $this->getDisplayLabel(),
     ]));
   }
