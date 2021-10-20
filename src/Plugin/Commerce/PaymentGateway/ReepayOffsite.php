@@ -104,10 +104,10 @@ class ReepayOffsite extends OffsitePaymentGatewayBase {
       'test' => $this->getMode() == 'test',
       'remote_id' => $token,
       'remote_state' => 'initialize',
-      'authorized' => REQUEST_TIME,
+      'authorized' => Drupal::time()->getRequestTime(),
     ]);
     $payment->save();
-    drupal_set_message('Payment was processed');
+    \Drupal::messenger()->addMessage('Payment was processed');
   }
 
 }

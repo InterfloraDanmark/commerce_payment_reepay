@@ -98,7 +98,7 @@ class ReepayCheckoutForm extends PaymentOffsiteForm implements ContainerInjectio
         $this->t('Could not create checkout session for order @handle: @error', [], ['context' => 'Reepay']),
         ['@handle' => $order->id(), '@error' => $exception->getMessage()]
       );
-      drupal_set_message($this->t('An error occured please try again or contact customer support.'), 'error');
+      \Drupal::messenger()->addMessage($this->t('An error occured please try again or contact customer support.'), 'error');
       $this->redirectToPreviousStep();
     }
 
