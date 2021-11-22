@@ -461,7 +461,7 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
       $payment_type = $source->card;
     }
     $payment = $this->paymentStorage->create([
-      'state' => 'authorization',
+      'state' => 'new',
       'amount' => $charge->getPrice(),
       'payment_gateway' => $this->entityId,
       'order_id' => $order->id(),
