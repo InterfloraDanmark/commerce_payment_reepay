@@ -35,6 +35,7 @@ use Symfony\Component\HttpFoundation\Request;
  *     "offsite-payment" =
  *   "Drupal\commerce_payment_reepay\PluginForm\OffsiteRedirect\ReepayCheckoutForm",
  *   },
+ *   payment_method_types = {"credit_card", "mobilepay"},
  *   credit_card_types = {
  *     "amex", "dinersclub", "discover", "jcb", "maestro", "mastercard",
  *   "visa",
