@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
+use Drupal\Core\Queue\RequeueException;
 use Drupal\interflora_order\Entity\Order;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -58,8 +59,22 @@ class PaymentCallbackQueue extends QueueWorkerBase implements ContainerFactoryPl
    * {@inheritdoc}
    */
   public function processItem($data) {
+
+    // To prevent race condition between accept url and webhook,
+    // configure delay between create and process.
+    $itemDelaySeconds = \Drupal::state()
+      ->get('reepay.queue_process_delay_seconds', FALSE);
+
+    if ($itemDelaySeconds && ($data->created + $itemDelaySeconds) > time()) {
+      // Prevent re-processing immediately.
+      sleep(1);
+
+      throw new RequeueException();
+    }
+
     $paymentGatewayPluginId = $data->paymentPluginId;
     $invoiceHandle = $data->invoiceHandle ?? '';
+
     $orderId = $data->id;
     $order = Order::load($orderId);
     $paymentGateway = $this->payment_gateway_storage->load($paymentGatewayPluginId);

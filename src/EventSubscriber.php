@@ -118,6 +118,7 @@ class EventSubscriber implements EventSubscriberInterface {
       $item->id = $order->id();
       $item->paymentPluginId = $paymentGatewayPlugin->id();
       $item->invoiceHandle = $invoiceHandle;
+      $item->created = time();
       $queue->createItem($item);
     }
   }
