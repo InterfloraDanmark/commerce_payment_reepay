@@ -501,8 +501,11 @@ class ReepayCheckout extends OffsitePaymentGatewayBase {
         $transition = $workflow->getTransition('void');
         break;
     }
-    $paymentState->applyTransition($transition);
-    $payment->save();
+    // Only transition if allowed
+    if ($paymentState->isTransitionAllowed($transition->getId())) {
+      $paymentState->applyTransition($transition);
+      $payment->save();
+    }
   }
 
 }
