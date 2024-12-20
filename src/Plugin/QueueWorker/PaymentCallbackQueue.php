@@ -95,11 +95,9 @@ class PaymentCallbackQueue extends QueueWorkerBase implements ContainerFactoryPl
       if (!$disableCallbackTransition) {
         \Drupal::logger('reepay')
           ->notice('Apply placed transition: ' . $order->id());
-        $payments = $order->getPayments();
-        if (empty($payments)) {
-          $payment = $paymentGatewayPlugin->getPayment($order, $charge);
-          $paymentGatewayPlugin->processPayment($payment, $charge);
-        }
+
+        $payment = $paymentGatewayPlugin->getPayment($order, $charge);
+        $paymentGatewayPlugin->processPayment($payment, $charge);
 
         $order->getState()->applyTransitionById('place');
         $order->unlock();
